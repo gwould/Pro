@@ -1,109 +1,188 @@
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    </head>
-
-    <body>
-        <jsp:include page="Menu.jsp"></jsp:include>
-            <div class="shopping-cart">
-                <div class="px-4 px-lg-0">
-
-                    <div class="pb-5">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-12 p-5 bg-white rounded shadow-sm mb-5">
-
-                                    <!-- Shopping cart table -->
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col" class="border-0 bg-light">
-                                                        <div class="p-2 px-3 text-uppercase">Sản Phẩm</div>
-                                                    </th>
-                                                    <th scope="col" class="border-0 bg-light">
-                                                        <div class="py-2 text-uppercase">Đơn Giá</div>
-                                                    </th>
-                                                    <th scope="col" class="border-0 bg-light">
-                                                        <div class="py-2 text-uppercase">Số Lượng</div>
-                                                    </th>
-                                                    <th scope="col" class="border-0 bg-light">
-                                                        <div class="py-2 text-uppercase">Xóa</div>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            <c:forEach items="${list}" var="o">
-                                                <tr>
-                                                    <th scope="row">
-                                                        <div class="p-2">
-                                                            <img src="${o.image}" alt="" width="70" class="img-fluid rounded shadow-sm">
-                                                            <div class="ml-3 d-inline-block align-middle">
-                                                                <h5 class="mb-0"> <a href="#" class="text-dark d-inline-block">${o.name}</a></h5><span class="text-muted font-weight-normal font-italic"></span>
-                                                            </div>
-                                                        </div>
-                                                    </th>
-                                                    <td class="align-middle"><strong>${o.price}</strong></td>
-                                                    <td class="align-middle">
-                                                        <a href="#"><button class="btnSub">-</button></a> 
-                                                        <strong>${o.amount}</strong>
-                                                        <a href="#"><button class="btnAdd">+</button></a>
-                                                    </td>
-                                                    <td class="align-middle"><a href="#" class="text-dark">
-                                                            <button type="button" class="btn btn-danger">Delete</button>
-                                                        </a>
-                                                    </td>
-                                                </tr> 
-                                            </c:forEach>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- End -->
-                            </div>
-                        </div>
-
-                        <div class="row py-5 p-4 bg-white rounded shadow-sm">
-                            <div class="col-lg-6">
-                                <div class="bg-light rounded-pill px-4 py-3 text-uppercase font-weight-bold">Voucher</div>
-                                <div class="p-4">
-                                    <div class="input-group mb-4 border rounded-pill p-2">
-                                        <input type="text" placeholder="Nhập Voucher" aria-describedby="button-addon3" class="form-control border-0">
-                                        <div class="input-group-append border-0">
-                                            <button id="button-addon3" type="button" class="btn btn-dark px-4 rounded-pill"><i class="fa fa-gift mr-2"></i>Sử dụng</button>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Shopping Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .cart-container {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .cart-item:hover {
+            background: #f8f9fa;
+            transition: background 0.3s;
+        }
+        
+        .quantity-control {
+            width: 150px;
+        }
+        
+        .btn-modern {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .btn-modern:hover {
+            transform: translateY(-2px);
+        }
+        
+        .summary-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <jsp:include page="Menu.jsp"></jsp:include>
+    <div class="shopping-cart py-5">
+        <div class="container">
+            <h2 class="mb-4 fw-bold">Your Cart</h2>
+            
+            <!-- Cart Items -->
+            <div class="cart-container mb-5">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="p-3 text-uppercase fw-bold">Product</th>
+                                <th class="p-3 text-uppercase fw-bold">Price</th>
+                                <th class="p-3 text-uppercase fw-bold">Quantity</th>
+                                <th class="p-3 text-uppercase fw-bold">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach items="${list}" var="o">
+                                <tr class="cart-item align-middle" data-id="${o.id}">
+                                    <td class="p-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="${o.image}" alt="${o.name}" class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                            <div class="ms-3">
+                                                <h5 class="mb-0"><a href="#" class="text-dark text-decoration-none">${o.name}</a></h5>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="bg-light rounded-pill px-4 py-3 text-uppercase font-weight-bold">Thành tiền</div>
-                                <div class="p-4">
-                                    <ul class="list-unstyled mb-4">
-                                        <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Tổng tiền hàng</strong><strong>100 $</strong></li>
-                                        <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Phí vận chuyển</strong><strong>Free ship</strong></li>
-                                        <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">VAT</strong><strong>10 $</strong></li>
-                                        <li class="d-flex justify-content-between py-3 border-bottom"><strong class="text-muted">Tổng thanh toán</strong>
-                                            <h5 class="font-weight-bold">110 $</h5>
-                                        </li>
-                                    </ul><a href="buy" class="btn btn-dark rounded-pill py-2 btn-block">Mua hàng</a>
-                                </div>
-                            </div>
-                        </div>
+                                    </td>
+                                    <td class="p-3">
+                                        <span class="fw-bold text-success">${o.price} $</span>
+                                    </td>
+                                    <td class="p-3">
+                                        <div class="input-group quantity-control">
+                                            <button class="btn btn-outline-secondary btn-modern btn-sub" type="button">-</button>
+                                            <input type="number" class="form-control text-center qty-input" value="${o.amount}" min="1">
+                                            <button class="btn btn-outline-secondary btn-modern btn-add" type="button">+</button>
+                                        </div>
+                                    </td>
+                                    <td class="p-3">
+                                        <button class="btn btn-danger btn-modern btn-delete">
+                                            <i class="fas fa-trash me-1"></i>Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
+            <!-- Summary Section -->
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="summary-section p-4">
+                        <h5 class="fw-bold mb-3">Voucher Code</h5>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Enter voucher code">
+                            <button class="btn btn-dark btn-modern" type="button">
+                                <i class="fas fa-gift me-2"></i>Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="summary-section p-4">
+                        <h5 class="fw-bold mb-4">Order Summary</h5>
+                        <ul class="list-unstyled">
+                            <li class="d-flex justify-content-between py-2">
+                                <span>Subtotal</span>
+                                <strong id="subtotal">100 $</strong>
+                            </li>
+                            <li class="d-flex justify-content-between py-2">
+                                <span>Shipping</span>
+                                <strong class="text-success">Free</strong>
+                            </li>
+                            <li class="d-flex justify-content-between py-2">
+                                <span>VAT</span>
+                                <strong>10 $</strong>
+                            </li>
+                            <hr>
+                            <li class="d-flex justify-content-between py-2">
+                                <span class="fw-bold">Total</span>
+                                <h4 class="fw-bold text-primary mb-0" id="total">110 $</h4>
+                            </li>
+                        </ul>
+                        <a href="buy" class="btn btn-primary btn-modern w-100 py-3 mt-3">
+                            Proceed to Checkout
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    </body>
+    </div>
 
-</html>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <script>
+        // Quantity controls
+        document.querySelectorAll('.btn-sub').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.nextElementSibling;
+                let value = parseInt(input.value);
+                if (value > 1) {
+                    input.value = value - 1;
+                    updateTotal();
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-add').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                let value = parseInt(input.value);
+                input.value = value + 1;
+                updateTotal();
+            });
+        });
+
+        // Delete button (placeholder)
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('Remove this item from cart?')) {
+                    this.closest('tr').remove();
+                    updateTotal();
+                }
+            });
+        });
+
+        // Update total (basic implementation)
+        function updateTotal() {
+            let subtotal = 0;
+            document.querySelectorAll('.cart-item').forEach(item => {
+                const price = parseFloat(item.querySelector('.text-success').textContent);
+                const qty = parseInt(item.querySelector('.qty-input').value);
+                subtotal += price * qty;
+            });
+            
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + ' $';
+            const vat = 10; // Should come from backend
+            document.getElementById('total').textContent = (subtotal + vat).toFixed(2) + ' $';
+        }
+
+        // Initial total calculation
+        updateTotal();
+    </script>
+</body>
 </html>
